@@ -15,10 +15,8 @@ Position BaseNpc::get_position() const { return position; }
 std::string BaseNpc::get_name() const { return name; }
 NpcType BaseNpc::get_type() const { return type; }
 
-// ИСПРАВЛЕНО: используем atomic load
 bool BaseNpc::is_alive() const { return alive.load(); }
 
-// ИСПРАВЛЕНО: используем atomic store
 void BaseNpc::kill() { 
     alive.store(false); 
 }
@@ -58,8 +56,7 @@ bool BaseNpc::accept(const std::shared_ptr<IVisitor>& visitor) {
 void BaseNpc::move() {
     if (!alive.load()) return;
     specific_move();
-    
-    // Проверяем границы игры (100x100)
+
     if (!position.is_within_game_bounds()) {
         position.x = std::max(0, std::min(position.x, MAP_WIDTH - 1));
         position.y = std::max(0, std::min(position.y, MAP_HEIGHT - 1));
@@ -85,7 +82,7 @@ void BaseNpc::notify_kill(const std::shared_ptr<INpc>& victim) {
 }
 
 void BaseNpc::specific_move() {
-    // Базовый класс не определяет движение
+
 }
 
 Dragon::Dragon(const std::string& name, int x, int y) : BaseNpc(NpcType::DRAGON, name, x, y) {}

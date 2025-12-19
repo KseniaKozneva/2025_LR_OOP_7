@@ -17,14 +17,12 @@ Game::Game() : game_start_time(std::chrono::steady_clock::now()) {
 }
 
 Game::~Game() {
-    reset_game();  // <-- ИСПРАВЛЕНО: вызываем reset_game вместо stop
+    reset_game();  
 }
 
 void Game::reset_game() {
-    // 1. Остановить все потоки
     stop();
     
-    // 2. Очистить все очереди и контейнеры
     {
         std::lock_guard<std::shared_mutex> lock(npcs_mutex);
         npcs.clear();
@@ -37,12 +35,10 @@ void Game::reset_game() {
         }
     }
     
-    // 3. Сбросить состояние
     factory.clear_names();
     game_running = false;
     game_start_time = std::chrono::steady_clock::now();
     
-    // 4. Убедиться, что потоки завершены
     if (movement_thread.joinable()) {
         movement_thread.join();
     }
@@ -73,8 +69,7 @@ void Game::add_npc(NpcType type, const std::string& base_name, int x, int y) {
 }
 
 void Game::load_from_file(const std::string& filename) {
-    reset_game();  // <-- ДОБАВЛЕНО: сбрасываем игру перед загрузкой
-    
+    reset_game(); 
     auto loaded = factory.load_from_file(filename);
     
     std::lock_guard<std::shared_mutex> lock(npcs_mutex);
@@ -150,7 +145,7 @@ void Game::fight(int range) {
 }
 
 void Game::initialize_game(int npc_count) {
-    reset_game();  // <-- ИСПРАВЛЕНО: используем reset_game
+    reset_game();  
     
     GameConfig game_config = {0, MAP_WIDTH - 1, 0, MAP_HEIGHT - 1};
     factory.set_config(game_config);
@@ -195,24 +190,22 @@ void Game::movement_worker() {
         {
             std::shared_lock<std::shared_mutex> lock(npcs_mutex);
             
-            // Быстрый выход если игра остановлена
             if (!game_running) break;
             
-            // Проверка на пустой список NPC
             if (npcs.empty()) {
                 std::this_thread::sleep_for(50ms);
                 continue;
             }
             
             for (auto& npc : npcs) {
-                if (!game_running) break;  // Быстрый выход
+                if (!game_running) break;  
                 if (npc && npc->is_alive()) {
                     npc->move();
                 }
             }
         }
         
-        if (!game_running) break;  // Быстрый выход
+        if (!game_running) break;  
         
         check_collisions();
         std::this_thread::sleep_for(50ms);
@@ -222,7 +215,6 @@ void Game::movement_worker() {
 void Game::check_collisions() {
     std::shared_lock<std::shared_mutex> lock(npcs_mutex);
     
-    // Быстрый выход если игра остановлена или нет NPC
     if (!game_running || npcs.empty()) return;
     
     for (size_t i = 0; i < npcs.size(); ++i) {
@@ -260,7 +252,7 @@ void Game::battle_worker() {
             }
         }
         
-        if (!game_running) break;  // Быстрый выход
+        if (!game_running) break;
         
         if (has_task && task.attacker && task.defender && 
             task.attacker->is_alive() && task.defender->is_alive()) {
@@ -325,13 +317,11 @@ void Game::stop() {
     
     game_running = false;
     
-    // Дать потокам время на завершение
     std::this_thread::sleep_for(100ms);
     
     if (movement_thread.joinable()) movement_thread.join();
     if (battle_thread.joinable()) battle_thread.join();
     
-    // Очистить очередь битв
     {
         std::lock_guard<std::mutex> lock(battle_queue_mutex);
         while (!battle_queue.empty()) {
@@ -356,13 +346,11 @@ void Game::print_map() {
     std::lock_guard<std::mutex> cout_lock(cout_mutex);
     std::shared_lock<std::shared_mutex> npc_lock(npcs_mutex);
     
-    // Рассчитываем текущее время игры
     auto now = std::chrono::steady_clock::now();
     int game_time = static_cast<int>(
         std::chrono::duration_cast<std::chrono::seconds>(now - game_start_time).count()
     );
 
-    // Создаём пустую карту 100x100, заполненную точками (пусто)
     char map[MAP_HEIGHT][MAP_WIDTH];
     for (int y = 0; y < MAP_HEIGHT; ++y) {
         for (int x = 0; x < MAP_WIDTH; ++x) {
@@ -370,7 +358,6 @@ void Game::print_map() {
         }
     }
 
-    // Заполняем позиции NPC
     for (const auto& npc : npcs) {
         if (npc && npc->is_alive()) {
             Position pos = npc->get_position();
@@ -387,7 +374,6 @@ void Game::print_map() {
         }
     }
 
-    // === ВЫВОД КРАСИВОЙ ИНФОРМАЦИОННОЙ ШАПКИ ===
     std::cout << "\n";
     std::cout << "+==================================================+\n";
     std::cout << "|                 MAP (" << std::setw(2) << game_time << "s)                   |\n";
@@ -395,7 +381,6 @@ void Game::print_map() {
     std::cout << "| SYMBOLS: D=Dragon, F=Frog, B=Bull, .=Empty      |\n";
     std::cout << "+--------------------------------------------------+\n";
 
-    // === ВЫВОД КАРТЫ 100x100 ===
     for (int y = 0; y < MAP_HEIGHT; ++y) {
         for (int x = 0; x < MAP_WIDTH; ++x) {
             std::cout << map[y][x];
@@ -403,7 +388,6 @@ void Game::print_map() {
         std::cout << "\n";
     }
 
-    // === СТАТИСТИКА ===
     int alive_count = get_alive_count();
     std::cout << "+--------------------------------------------------+\n";
     std::cout << "| Alive: " << std::setw(3) << alive_count

@@ -7,14 +7,14 @@
 #include <random>
 #include <vector>
 #include <ostream>
-#include <atomic>  // <-- добавлено
+#include <atomic>  
 
 class BaseNpc : public INpc, public std::enable_shared_from_this<BaseNpc> {
 protected:
     Position position;
     std::string name;
     NpcType type;
-    std::atomic<bool> alive{true};  // <-- ИСПРАВЛЕНО: было bool, стало atomic<bool>
+    std::atomic<bool> alive{true}; 
     mutable std::mt19937 rng;
     std::vector<std::shared_ptr<IObserver>> observers;
     

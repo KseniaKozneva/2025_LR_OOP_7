@@ -46,7 +46,7 @@ std::vector<std::shared_ptr<INpc>> NpcFactory::load_from_file(const std::string&
     
     int count;
     if (file >> count) {
-        file.ignore(); // Пропускаем символ новой строки
+        file.ignore(); 
         for (int i = 0; i < count; ++i) {
             auto npc = create_npc_from_stream(file);
             if (npc) {
@@ -64,7 +64,6 @@ void NpcFactory::save_to_file(const std::string& filename, const std::vector<std
         throw std::runtime_error("Cannot open file for writing: " + filename);
     }
     
-    // Сохраняем количество живых NPC
     int alive_count = 0;
     for (const auto& npc : npcs) {
         if (npc && npc->is_alive()) {
@@ -74,7 +73,6 @@ void NpcFactory::save_to_file(const std::string& filename, const std::vector<std
     
     file << alive_count << "\n";
     
-    // Сохраняем каждого NPC
     for (const auto& npc : npcs) {
         if (npc && npc->is_alive()) {
             npc->save(file);

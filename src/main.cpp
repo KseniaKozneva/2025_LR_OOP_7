@@ -11,7 +11,7 @@ using namespace std::chrono_literals;
 void print_help() {
     std::cout << "\n";
     std::cout << "+========================================+\n";
-    std::cout << "|        BALAGUR FATE 3 v1.0           |\n";
+    std::cout << "|        BALAGUR FATE 3                |\n";
     std::cout << "+========================================+\n";
     std::cout << "|           EDITOR MODE                |\n";
     std::cout << "+----------------------------------------+\n";

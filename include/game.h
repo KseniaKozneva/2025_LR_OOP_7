@@ -45,17 +45,14 @@ private:
 public:
     Game();
     ~Game();
-    
-    // Методы из 6-й лабы
     void add_npc(NpcType type, const std::string& base_name, int x, int y);
     void load_from_file(const std::string& filename);
     void save_to_file(const std::string& filename);
     void print_npcs();
     void fight(int range);
-    
-    // Методы для 7-й лабы
+
     void initialize_game(int npc_count);
-    void reset_game();  // <-- ДОБАВЛЕНО
+    void reset_game();  
     void start();
     void stop();
     
