@@ -11,7 +11,7 @@ using namespace std::chrono_literals;
 void print_help() {
     std::cout << "\n";
     std::cout << "+========================================+\n";
-    std::cout << "|        BALAGUR FATE 3                |\n";
+    std::cout << "|        BALAGUR FATE                  |\n";
     std::cout << "+========================================+\n";
     std::cout << "|           EDITOR MODE                |\n";
     std::cout << "+----------------------------------------+\n";
@@ -20,9 +20,6 @@ void print_help() {
     std::cout << "| 3 - Save to file                     |\n";
     std::cout << "| 4 - Load from file                   |\n";
     std::cout << "| 5 - Start battle (editor mode)       |\n";
-    std::cout << "+----------------------------------------+\n";
-    std::cout << "|           GAME MODE (Lab 7)          |\n";
-    std::cout << "+----------------------------------------+\n";
     std::cout << "| 6 - Initialize game (50 NPCs)        |\n";
     std::cout << "| 7 - Start auto-battle (30 seconds)   |\n";
     std::cout << "| 8 - Print map                        |\n";
@@ -65,7 +62,7 @@ int main() {
     std::string filename = "dungeon.txt";
     
     std::cout << "+==============================================================+\n";
-    std::cout << "|        BALAGUR FATE 3 - DUNGEON EDITOR & BATTLE            |\n";
+    std::cout << "|        BALAGUR FATE   - DUNGEON EDITOR & BATTLE            |\n";
     std::cout << "+==============================================================+\n";
     print_help();
     

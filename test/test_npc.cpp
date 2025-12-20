@@ -17,9 +17,7 @@ TEST(NPCTest, PositionBounds) {
     Position p2{-1, 50};
     EXPECT_FALSE(p2.is_within_game_bounds());
     
-    // ИСПРАВЛЕНО: EDITOR_MAX_X = 500, так что (500, 50) - это ВНЕ границ!
-    // Границы: [0, EDITOR_MAX_X-1] = [0, 499]
-    Position p3{499, 50};  // Было 500, стало 499
+    Position p3{499, 50};  
     EXPECT_TRUE(p3.is_within_editor_bounds());
     EXPECT_FALSE(p3.is_within_game_bounds());
 }
@@ -39,7 +37,6 @@ TEST(NPCTest, DragonMovement) {
     EXPECT_EQ(config.move_distance, DRAGON_CONFIG.move_distance);
     EXPECT_EQ(config.kill_distance, DRAGON_CONFIG.kill_distance);
     
-    // Проверяем, что движение не выходит за границы
     for (int i = 0; i < 100; ++i) {
         dragon->move();
         auto pos = dragon->get_position();
@@ -57,7 +54,6 @@ TEST(NPCTest, KillMethod) {
     npc->kill();
     EXPECT_FALSE(npc->is_alive());
     
-    // Убитый NPC не должен двигаться
     Position old_pos = npc->get_position();
     npc->move();
     EXPECT_EQ(npc->get_position().x, old_pos.x);
@@ -69,19 +65,16 @@ TEST(NPCTest, FightVisitor) {
     auto bull = std::make_shared<Bull>("Bull", 0, 0);
     auto frog = std::make_shared<Frog>("Frog", 0, 0);
     
-    // Дракон может убить быка
     auto dragonVisitor = std::make_shared<FightVisitor>(NpcType::DRAGON);
     EXPECT_TRUE(bull->accept(dragonVisitor));
     EXPECT_FALSE(frog->accept(dragonVisitor));
     EXPECT_FALSE(dragon->accept(dragonVisitor));
-    
-    // Бык может убить лягушку
+
     auto bullVisitor = std::make_shared<FightVisitor>(NpcType::BULL);
     EXPECT_TRUE(frog->accept(bullVisitor));
     EXPECT_FALSE(bull->accept(bullVisitor));
     EXPECT_FALSE(dragon->accept(bullVisitor));
     
-    // Лягушка никого не убивает
     auto frogVisitor = std::make_shared<FightVisitor>(NpcType::FROG);
     EXPECT_FALSE(dragon->accept(frogVisitor));
     EXPECT_FALSE(bull->accept(frogVisitor));
